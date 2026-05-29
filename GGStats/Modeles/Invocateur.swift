@@ -8,9 +8,11 @@
 import Foundation
 
 struct Invocateur: Codable {
-    let id: String
+    let id: String?
+    let accountId: String?
     let puuid: String
     let profileIconId: Int
+    let revisionDate: Int?
     let summonerLevel: Int
 }
 
