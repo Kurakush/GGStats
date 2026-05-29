@@ -15,8 +15,16 @@ class APIRiot {
     private let regionLoL = "euw1"
     
     func rechercherJoueur(pseudo: String, tag: String) async throws -> (CompteRiot, Invocateur, Classement?) {
+        let compte = try await recupererCompte(pseudo: pseudo, tag: tag)
+        let invocateur = try await recupererInvocateur(puuid: compte.puuid)
+        let classements = try await recupererClassements(idInvocateur: invocateur.puuid)
         
+        let classementSoloQ = classements.first { classement in classement.queueType == "RANKED_SOLO_5x5"}
+        
+        return (compte, invocateur, classementSoloQ)
     }
+    
+    
     
     
 }
