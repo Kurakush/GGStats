@@ -37,5 +37,38 @@ class APIRiot {
         return try await envoyerRequete(url)
     }
     
+    private func recupererInvocateur(puuid: String) async throws -> Invocateur {
+        let adresse = "https://\(regionLoL).api.riotgames.com/lol/summoner/v4/summoners/by-puuid\(puuid)"
+        
+        guard let url = URL(string: adresse) else {
+            throw URLError(.badURL)
+        }
+        return try await envoyerRequete(url)
+    }
     
+    private func recupererClassements(idInvocateur: String) async throws -> [Classement] {
+        let adresse = "https://\(regionLoL).api.riotgames.com/lol/league/v4/entries/by-summoner/\(idInvocateur)"
+        
+        guard let url = URL(string: adresse) else {
+            throw URLError(.badURL)
+        }
+        return try await envoyerRequete(url)
+    }
+    
+    private func envoyerRequete<T: Decodable>(_ url: URL) async throws -> T {
+        var requete = URLRequest(url: url)
+        requete.setValue(cleAPI, forHTTPHeaderField: "X-Riot-Token")
+        
+        let (donnees,reponse) = try await URLSession.shared.data(for: requete)
+        guard let reponseHTTP = reponse as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+        
+        guard reponseHTTP.statusCode == 200 else {
+            throw URLError(.badServerResponse)
+        }
+        
+        let decodeur = JSONDecoder()
+        return try decodeur.decode(T.self, from: donnees)
+    }
 }
