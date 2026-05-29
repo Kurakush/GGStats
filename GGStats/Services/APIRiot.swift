@@ -24,7 +24,18 @@ class APIRiot {
         return (compte, invocateur, classementSoloQ)
     }
     
-    
+    private func recupererCompte(pseudo: String, tag: String) async throws -> CompteRiot {
+        let pseudoEncode = pseudo.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? pseudo
+        let tagEncode = tag.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? tag
+        
+        let adresse = "https://\(regionCompte).api.riotgames.com/riot/account/v1/account/by-riot-id/\(pseudoEncode)/\(tagEncode)"
+        
+        guard let url = URL(string: adresse) else {
+            throw URLError(.badURL)
+        }
+        
+        return try await envoyerRequete(url)
+    }
     
     
 }
