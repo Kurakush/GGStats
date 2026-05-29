@@ -6,5 +6,12 @@
 //
 
 import SwiftUI
-import CoreData
+@main
+struct GGStatsApp: App {
+    var body: some Scene {
+        WindowGroup {
+            AccueilView()
+        }
+    }
+}
 
