@@ -25,7 +25,7 @@ struct RechercheView: View {
                         .font(.system(size: 40, weight: .black))
                         .foregroundStyle(.white)
 
-                    Text("Entre un Riot ID comme Faker#KR1")
+                    Text("Entre un Riot ID comme BbokAri#lee")
                         .foregroundStyle(.white.opacity(0.75))
                 }
 
