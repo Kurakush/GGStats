@@ -32,7 +32,7 @@ enum ErreurAPIRiot: LocalizedError {
 }
 
 class APIRiot {
-    private let cleAPI = "RGAPI-81547bf7-cfc5-4551-8ccf-912189a759e5"
+    private let cleAPI = "RGAPI-72120751-0e16-4fd9-8c5f-09237d3c151d"
 
     private let regionCompte = "europe"
     private let regionLol = "euw1"
