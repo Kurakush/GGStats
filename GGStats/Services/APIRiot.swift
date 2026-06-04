@@ -4,14 +4,16 @@
 //
 //  Created by Eve Lacroix on 29/05/2026.
 //
-//RGAPI-81547bf7-cfc5-4551-8ccf-912189a759e5"
+//
 
 import Foundation
 
+// permet de créer nos propres erreurs pour l'API Riot
 enum ErreurAPIRiot: LocalizedError {
     case mauvaiseURL
     case erreurHTTP(Int, String)
 
+    // message affiché quand une erreur arrive
     var errorDescription: String? {
         switch self {
         case .mauvaiseURL:
@@ -32,12 +34,14 @@ enum ErreurAPIRiot: LocalizedError {
 }
 
 class APIRiot {
-    private let cleAPI = "RGAPI-72120751-0e16-4fd9-8c5f-09237d3c151d"
+    private let cleAPI = "RGAPI-b5d9378d-498e-4392-9a1a-9d9dd73cca09"
 
     private let regionCompte = "europe"
     private let regionLol = "euw1"
     private let regionMatch = "europe"
-
+    
+    // Fonction principale appelée par le ViewModel.
+    // Elle recherche le compte Riot, le profil LoL, le classement, les maitrises et les dernieres parties
     func rechercherJoueur(
         pseudo: String,
         tag: String,
@@ -85,6 +89,9 @@ class APIRiot {
         }
     }
 
+    // Récupere le compte Riot à partir du Riot ID
+    // Exemple : pseudo = "Faker", tag = "KR1"
+    // Permet surtout d'obtenir  le puuid du joueur
     private func recupererCompte(pseudo: String, tag: String) async throws -> CompteRiot {
         let pseudoEncode = pseudo.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? pseudo
         let tagEncode = tag.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? tag
@@ -97,7 +104,9 @@ class APIRiot {
 
         return try await envoyerRequete(url, avecToken: true)
     }
-
+    
+    // Récupère les infos du profil LoL
+    // On utilise le puuid pour obtenir l'icone de profil et le niveau du compte
     private func recupererInvocateur(puuid: String) async throws -> Invocateur {
         let adresse = "https://\(regionLol).api.riotgames.com/lol/summoner/v4/summoners/by-puuid/\(puuid)"
 
@@ -108,6 +117,8 @@ class APIRiot {
         return try await envoyerRequete(url, avecToken: true)
     }
 
+    // Recupere tous les classements du joueur
+    // Le joueur peut avoir plusieurs classements : SoloQ, flex
     private func recupererClassements(puuid: String) async throws -> [Classement] {
         let adresse = "https://\(regionLol).api.riotgames.com/lol/league/v4/entries/by-puuid/\(puuid)"
 
@@ -118,6 +129,8 @@ class APIRiot {
         return try await envoyerRequete(url, avecToken: true)
     }
 
+    // Recup les 3 meilleurs maitrises de champion du joueur
+    // L'API Riot envoie seulement des championId, donc on utilise Data Dragon pour retrouver les noms et images.
     private func recupererTopMaitrises(puuid: String) async throws -> [MaitriseChampion] {
         let dictionnaireChampions = try await recupererDictionnaireChampions()
 
@@ -144,6 +157,8 @@ class APIRiot {
         }
     }
 
+    // Recup les 5 dernieres parties LoL selon la file
+    // Pour chaque partie, on recup aussi les 10 champions présents dans la game.
     private func recupererHistoriqueLoL(
         puuid: String,
         file: FileRecherche
@@ -212,6 +227,8 @@ class APIRiot {
         return parties
     }
 
+    // Recup historique TFT.
+    // On recup plus de 5 parties au départ, puis on garde seulement les parties classées TFT.
     private func recupererHistoriqueTFT(puuid: String) async throws -> [HistoriquePartie] {
         let adresse = "https://\(regionMatch).api.riotgames.com/tft/match/v1/matches/by-puuid/\(puuid)/ids?start=0&count=15"
 
@@ -265,6 +282,8 @@ class APIRiot {
         return parties
     }
 
+    // Recup la liste complete des champions via Data Dragon
+    // On crée ensuite un dictionnaire pour retrouver rapidement un champion avec son id
     private func recupererDictionnaireChampions() async throws -> [Int: ChampionDataDragon] {
         let version = try await recupererVersionDataDragon()
 
@@ -290,6 +309,8 @@ class APIRiot {
         return resultat
     }
 
+    // Recup automatiquement la derniere version de Data Dragon.
+    // Evite d'utiliser une version fixe qui pourrait devenir ancienne
     private func recupererVersionDataDragon() async throws -> String {
         let adresse = "https://ddragon.leagueoflegends.com/api/versions.json"
 
@@ -302,6 +323,8 @@ class APIRiot {
         return versions.first ?? "15.12.1"
     }
 
+    // Fonction pour envoyer toutes les requetes HTTP.
+    // Elle ajoute le token Riot si nécessaire et décode le JSON recu.
     private func envoyerRequete<T: Decodable>(_ url: URL, avecToken: Bool) async throws -> T {
         var requete = URLRequest(url: url)
 
@@ -323,12 +346,14 @@ class APIRiot {
         return try JSONDecoder().decode(T.self, from: donnees)
     }
 
+    // Convertit une durée en secondes en format lisible.
     private func formaterDuree(_ secondes: Int) -> String {
         let minutes = secondes / 60
         let secondesRestantes = secondes % 60
         return "\(minutes)m \(secondesRestantes)s"
     }
 
+    // Convertit un timestamp Riot en date lisible.
     private func formaterDate(_ timestamp: Int) -> String {
         let date = Date(timeIntervalSince1970: TimeInterval(timestamp) / 1000)
 
@@ -340,21 +365,25 @@ class APIRiot {
     }
 }
 
+// Décoder une partie LoL
 private struct MatchLoL: Codable {
     let metadata: MetadataLoL
     let info: InfoLoL
 }
 
+// Décoder les métadonnées d'une partie LoL
 private struct MetadataLoL: Codable {
     let matchId: String
 }
 
+// Décoder les infos principales d'une partie
 private struct InfoLoL: Codable {
     let gameCreation: Int
     let gameDuration: Int
     let participants: [ParticipantLoL]
 }
 
+// Décoder un joueur dans une partie
 private struct ParticipantLoL: Codable {
     let puuid: String
     let championName: String
@@ -369,21 +398,25 @@ private struct ParticipantLoL: Codable {
     let riotIdTagline: String?
 }
 
+// Décoder une partie TFT
 private struct MatchTFT: Codable {
     let metadata: MetadataTFT
     let info: InfoTFT
 }
 
+// Décoder les métadonnées d'une partie TFT
 private struct MetadataTFT: Codable {
     let match_id: String
 }
 
+// Decoder les infos principales d'une game tft
 private struct InfoTFT: Codable {
     let game_datetime: Int
     let queue_id: Int?
     let participants: [ParticipantTFT]
 }
 
+// Décoder un joueur dans une game TFT
 private struct ParticipantTFT: Codable {
     let puuid: String
     let placement: Int
@@ -391,22 +424,26 @@ private struct ParticipantTFT: Codable {
     let players_eliminated: Int?
 }
 
+// Décoder une maitrise de champion
 private struct MaitriseChampionAPI: Codable {
     let championId: Int
     let championLevel: Int
     let championPoints: Int
 }
 
+// Decoder le fichier champion.json de Data Dragon
 private struct ChampionsDataDragon: Codable {
     let data: [String: ChampionDataDragonAPI]
 }
 
+// Representer un champion recup dans Data Dragon
 private struct ChampionDataDragonAPI: Codable {
     let id: String
     let key: String
     let name: String
 }
 
+// Retrouver le nom et l'image du champion
 private struct ChampionDataDragon {
     let nom: String
     let cleImage: String
