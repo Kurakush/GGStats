@@ -43,8 +43,6 @@ struct AProposView: View {
                         texte: "Recherche par pseudo#tag, choix de la file SoloQ, Flex ou TFT, affichage des 5 dernières games, des champions joués et des détails de chaque partie."
                     )
 
-                    carteTechnologies
-
                     carteInfo(
                         titre: "API utilisée",
                         icone: "network",
@@ -58,32 +56,6 @@ struct AProposView: View {
         }
         .navigationTitle("À propos")
         .navigationBarTitleDisplayMode(.inline)
-    }
-
-    var carteTechnologies: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack {
-                Image(systemName: "hammer.fill")
-                    .foregroundStyle(Color.ggVioletClair)
-
-                Text("Technologies utilisées")
-                    .font(.title2)
-                    .bold(true)
-                    .foregroundStyle(.white)
-            }
-
-            VStack(spacing: 12) {
-                ligneTech(nom: "SwiftUI", description: "Interface graphique")
-                ligneTech(nom: "URLSession", description: "Requêtes HTTP")
-                ligneTech(nom: "Codable", description: "Décodage JSON")
-                ligneTech(nom: "Riot API", description: "Données League of Legends")
-                ligneTech(nom: "Data Dragon", description: "Images des champions")
-            }
-        }
-        .padding()
-        .background(Color.ggCarte)
-        .cornerRadius(24)
-        .shadow(color: .black.opacity(0.25), radius: 8)
     }
 
     func carteInfo(titre: String, icone: String, texte: String) -> some View {
