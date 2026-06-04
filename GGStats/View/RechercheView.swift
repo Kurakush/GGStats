@@ -99,21 +99,19 @@ struct RechercheView: View {
                         .cornerRadius(12)
                 }
 
-                NavigationLink(
-                    "",
-                    destination: ResultatView(vueModele: vueModele),
-                    isActive: $allerVersResultat
-                )
-                .hidden()
-
                 Spacer()
             }
             .padding()
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        
+        .navigationDestination(isPresented: $allerVersResultat) {
+            ResultatView(vueModele: vueModele)
+        }
     }
 
+    // Verifie le format du riot ID, sépare le pseudo et le tag puis lance la recherche via ViewModel
     func rechercherJoueur() async {
         erreurSaisie = ""
 

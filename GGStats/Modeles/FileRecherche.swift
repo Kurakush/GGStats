@@ -7,6 +7,7 @@
 
 import Foundation
 
+// Enum qui représente les différentes files disponibles.
 enum FileRecherche: String, CaseIterable, Identifiable {
     case soloQ = "SoloQ"
     case flex = "Flex"

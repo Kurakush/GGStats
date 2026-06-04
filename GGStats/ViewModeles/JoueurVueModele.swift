@@ -5,8 +5,11 @@
 //  Created by Eve Lacroix on 29/05/2026.
 //
 
+// ViewModel qui sert d'intermédiaire entre l'API Riot et les View.
+// Il stocke les données récupérées et met à jour l'interface automatiquement.
 import Foundation
 import Combine
+
 
 class JoueurVueModele: ObservableObject {
     @Published var compte: CompteRiot?
@@ -22,6 +25,8 @@ class JoueurVueModele: ObservableObject {
 
     private let api = APIRiot()
 
+    // Lance une recherche complete du joueur
+    // Cette fonction recup le profil, le classement, les maitrises et les dernieres parties
     func rechercher(pseudo: String, tag: String, file: FileRecherche) async {
         await MainActor.run {
             chargement = true
