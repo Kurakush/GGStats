@@ -89,6 +89,41 @@ class APIRiot {
         }
     }
 
+    // Version allégée utilisée par le widget : seulement le compte, le profil et le classement.
+    // On évite l'historique et les maîtrises (une quinzaine de requêtes) car un widget a peu de temps
+    // et de mémoire pour se mettre à jour.
+    func rechercherResumeCompte(
+        pseudo: String,
+        tag: String,
+        file: FileRecherche
+    ) async throws -> (
+        compte: CompteRiot,
+        invocateur: Invocateur?,
+        classement: Classement?,
+        urlIcone: URL?
+    ) {
+        let compte = try await recupererCompte(pseudo: pseudo, tag: tag)
+        let invocateur = try? await recupererInvocateur(puuid: compte.puuid)
+        let classements = try await recupererClassements(puuid: compte.puuid)
+
+        let classementFile = classements.first { classement in
+            classement.queueType == file.queueTypeClassement
+        }
+
+        // On prend la dernière version de Data Dragon pour que les icônes récentes existent
+        var urlIcone: URL?
+        if let invocateur, let version = try? await recupererVersionDataDragon() {
+            urlIcone = URL(string: "https://ddragon.leagueoflegends.com/cdn/\(version)/img/profileicon/\(invocateur.profileIconId).png")
+        }
+
+        return (
+            compte: compte,
+            invocateur: invocateur,
+            classement: classementFile,
+            urlIcone: urlIcone
+        )
+    }
+
     // Récupere le compte Riot à partir du Riot ID
     // Exemple : pseudo = "Faker", tag = "KR1"
     // Permet surtout d'obtenir  le puuid du joueur
