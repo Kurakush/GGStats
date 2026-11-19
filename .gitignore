@@ -1,0 +1,8 @@
+# Clé API Riot : ne jamais la versionner (voir Config/Secrets.exemple.swift)
+Partage/Secrets.swift
+
+# Réglages personnels d'Xcode (fenêtres ouvertes, schémas perso…)
+xcuserdata/
+
+# Fichiers macOS
+.DS_Store

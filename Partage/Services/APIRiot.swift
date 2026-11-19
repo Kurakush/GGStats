@@ -20,8 +20,9 @@ enum ErreurAPIRiot: LocalizedError {
             return "URL invalide."
 
         case .erreurHTTP(let code, let message):
-            if code == 403 {
-                return "Erreur 403 : clé API invalide ou expirée."
+            // Riot renvoie 401 pour une clé inconnue et 403 pour une clé expirée
+            if code == 401 || code == 403 {
+                return "Erreur \(code) : clé API invalide ou expirée."
             } else if code == 404 {
                 return "Erreur 404 : joueur introuvable ou mauvais serveur."
             } else if code == 429 {
@@ -34,7 +35,9 @@ enum ErreurAPIRiot: LocalizedError {
 }
 
 class APIRiot {
-    private let cleAPI = "RGAPI-b5d9378d-498e-4392-9a1a-9d9dd73cca09"
+    // La clé est dans Partage/Secrets.swift, ignoré par git (modèle : Config/Secrets.exemple.swift).
+    // Pour la changer : ./scripts/changer-cle-api.sh RGAPI-...
+    private let cleAPI = Secrets.cleAPIRiot
 
     private let regionCompte = "europe"
     private let regionLol = "euw1"

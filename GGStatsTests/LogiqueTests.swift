@@ -97,6 +97,7 @@ struct RangTests {
 struct ErreurAPIRiotTests {
 
     @Test("Codes HTTP traduits pour l'utilisateur", arguments: [
+        (401, "Erreur 401 : clé API invalide ou expirée."),
         (403, "Erreur 403 : clé API invalide ou expirée."),
         (404, "Erreur 404 : joueur introuvable ou mauvais serveur."),
         (429, "Erreur 429 : trop de requêtes envoyées."),
