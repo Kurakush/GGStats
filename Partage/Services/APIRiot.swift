@@ -39,7 +39,15 @@ class APIRiot {
     private let regionCompte = "europe"
     private let regionLol = "euw1"
     private let regionMatch = "europe"
-    
+
+    // Session réseau utilisée pour toutes les requêtes.
+    // Par défaut la vraie (URLSession.shared) ; les tests en passent une qui renvoie de fausses réponses.
+    private let session: URLSession
+
+    init(session: URLSession = .shared) {
+        self.session = session
+    }
+
     // Fonction principale appelée par le ViewModel.
     // Elle recherche le compte Riot, le profil LoL, le classement, les maitrises et les dernieres parties
     func rechercherJoueur(
@@ -367,7 +375,7 @@ class APIRiot {
             requete.setValue(cleAPI, forHTTPHeaderField: "X-Riot-Token")
         }
 
-        let (donnees, reponse) = try await URLSession.shared.data(for: requete)
+        let (donnees, reponse) = try await session.data(for: requete)
 
         guard let reponseHTTP = reponse as? HTTPURLResponse else {
             throw URLError(.badServerResponse)

@@ -174,7 +174,7 @@ struct WatchResultatView: View {
     }
 
     private func pourcentage(_ valeur: Int, _ total: Int) -> Int {
-        total == 0 ? 0 : Int(Double(valeur) / Double(total) * 100)
+        Statistiques.pourcentage(valeur: valeur, total: total)
     }
 }
 

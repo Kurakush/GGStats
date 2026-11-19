@@ -84,22 +84,15 @@ struct WatchRechercheView: View {
     private func rechercherJoueur() async {
         erreurSaisie = ""
 
-        let morceaux = riotID.split(separator: "#")
-
-        guard morceaux.count == 2 else {
-            erreurSaisie = "Format attendu : Pseudo#TAG"
+        let id: RiotID
+        do {
+            id = try RiotID.analyser(riotID)
+        } catch {
+            erreurSaisie = error.localizedDescription
             return
         }
 
-        let pseudo = String(morceaux[0]).trimmingCharacters(in: .whitespacesAndNewlines)
-        let tag = String(morceaux[1]).trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !pseudo.isEmpty, !tag.isEmpty else {
-            erreurSaisie = "Le pseudo ou le tag est vide."
-            return
-        }
-
-        await vueModele.rechercher(pseudo: pseudo, tag: tag, file: fileChoisie)
+        await vueModele.rechercher(pseudo: id.pseudo, tag: id.tag, file: fileChoisie)
 
         if vueModele.compte != nil {
             allerVersResultat = true

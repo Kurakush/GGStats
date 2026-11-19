@@ -23,7 +23,12 @@ class JoueurVueModele: ObservableObject {
     @Published var chargement = false
     @Published var messageErreur = ""
 
-    private let api = APIRiot()
+    private let api: APIRiot
+
+    // L'API peut être remplacée (utile pour les tests), sinon on utilise la vraie
+    init(api: APIRiot = APIRiot()) {
+        self.api = api
+    }
 
     // Lance une recherche complete du joueur
     // Cette fonction recup le profil, le classement, les maitrises et les dernieres parties

@@ -31,8 +31,7 @@ struct ResumeCompte {
 
     var winRate: Int? {
         guard let classement else { return nil }
-        let total = classement.wins + classement.losses
-        return total == 0 ? 0 : Int(Double(classement.wins) / Double(total) * 100)
+        return Statistiques.pourcentage(valeur: classement.wins, total: classement.wins + classement.losses)
     }
 
     // Exemple utilisé dans la galerie des widgets et pour les aperçus
@@ -78,18 +77,15 @@ struct FournisseurCompte: AppIntentTimelineProvider {
 
     // Découpe le Riot ID, appelle l'API puis télécharge l'icône de profil
     private func chargerEntree(_ configuration: ConfigurationCompteIntent) async -> EntreeCompte {
-        let morceaux = configuration.riotID.split(separator: "#")
-
-        guard morceaux.count == 2 else {
+        // Riot ID absent ou mal écrit : on invite l'utilisateur à configurer le widget
+        guard let id = try? RiotID.analyser(configuration.riotID) else {
             return EntreeCompte(date: .now, etat: .aConfigurer)
         }
 
-        let pseudo = String(morceaux[0]).trimmingCharacters(in: .whitespacesAndNewlines)
-        let tag = String(morceaux[1]).trimmingCharacters(in: .whitespacesAndNewlines)
         let file = configuration.file.fileRecherche
 
         do {
-            let resultat = try await APIRiot().rechercherResumeCompte(pseudo: pseudo, tag: tag, file: file)
+            let resultat = try await APIRiot().rechercherResumeCompte(pseudo: id.pseudo, tag: id.tag, file: file)
 
             // AsyncImage ne marche pas dans un widget : l'image doit être téléchargée ici
             var icone: UIImage?

@@ -115,24 +115,17 @@ struct RechercheView: View {
     func rechercherJoueur() async {
         erreurSaisie = ""
 
-        let parties = riotID.split(separator: "#")
-
-        if parties.count != 2 {
-            erreurSaisie = "Entre le pseudo au format : Pseudo#TAG"
-            return
-        }
-
-        let pseudo = String(parties[0]).trimmingCharacters(in: .whitespacesAndNewlines)
-        let tag = String(parties[1]).trimmingCharacters(in: .whitespacesAndNewlines)
-
-        if pseudo.isEmpty || tag.isEmpty {
-            erreurSaisie = "Le pseudo ou le tag est vide."
+        let id: RiotID
+        do {
+            id = try RiotID.analyser(riotID)
+        } catch {
+            erreurSaisie = error.localizedDescription
             return
         }
 
         await vueModele.rechercher(
-            pseudo: pseudo,
-            tag: tag,
+            pseudo: id.pseudo,
+            tag: id.tag,
             file: fileChoisie
         )
 

@@ -326,10 +326,6 @@ struct ResultatView: View {
     }
 
     func calculerPourcentage(valeur: Int, total: Int) -> Int {
-        if total == 0 {
-            return 0
-        }
-
-        return Int((Double(valeur) / Double(total)) * 100)
+        Statistiques.pourcentage(valeur: valeur, total: total)
     }
 }
