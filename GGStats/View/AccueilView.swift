@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AccueilView: View {
     @StateObject var viewModel = JoueurVueModele()
+    @ObservedObject var authManager: AuthManager
 
     var body: some View {
         NavigationStack {
@@ -82,10 +83,49 @@ struct AccueilView: View {
                     }
 
                     Spacer()
+
+                    carteCompte
                 }
                 .padding()
             }
         }
+    }
+
+    // Compte Firebase connecté + déconnexion
+    var carteCompte: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "person.crop.circle.fill")
+                .font(.title2)
+                .foregroundStyle(.white)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Connecté en tant que")
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.7))
+                Text(authManager.userEmail ?? "Utilisateur")
+                    .font(.subheadline)
+                    .bold(true)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .foregroundStyle(.white)
+            }
+
+            Spacer()
+
+            Button("Se déconnecter") {
+                authManager.signOut()
+            }
+            .font(.subheadline)
+            .bold(true)
+            .foregroundStyle(.white)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color.red.opacity(0.35))
+            .cornerRadius(12)
+        }
+        .padding()
+        .background(Color.ggCarte)
+        .cornerRadius(18)
     }
 
     func infoBadge(titre: String, icone: String) -> some View {
