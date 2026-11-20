@@ -355,6 +355,48 @@ class APIRiot {
         return resultat
     }
 
+    // Liste de tous les champions, triée par nom, pour parcourir le catalogue de skins.
+    // Renvoie aussi la version Data Dragon pour construire les URL des icônes.
+    func recupererCatalogueChampions() async throws -> (version: String, champions: [ChampionCatalogue]) {
+        let version = try await recupererVersionDataDragon()
+
+        guard let url = URL(string: "https://ddragon.leagueoflegends.com/cdn/\(version)/data/fr_FR/champion.json") else {
+            throw ErreurAPIRiot.mauvaiseURL
+        }
+
+        let donnees: ChampionsDataDragon = try await envoyerRequete(url, avecToken: false)
+
+        let champions = donnees.data.values
+            .map { ChampionCatalogue(id: $0.id, nom: $0.name) }
+            .sorted { $0.nom.localizedCompare($1.nom) == .orderedAscending }
+
+        return (version, champions)
+    }
+
+    // Tous les skins d'un champion (le fichier détaillé du champion contient la liste des skins)
+    func recupererSkins(champion: ChampionCatalogue, version: String) async throws -> [SkinChampion] {
+        guard let url = URL(string: "https://ddragon.leagueoflegends.com/cdn/\(version)/data/fr_FR/champion/\(champion.id).json") else {
+            throw ErreurAPIRiot.mauvaiseURL
+        }
+
+        let donnees: ChampionDetailDataDragon = try await envoyerRequete(url, avecToken: false)
+
+        guard let detail = donnees.data[champion.id] else {
+            return []
+        }
+
+        return detail.skins.map { skin in
+            SkinChampion(
+                id: skin.id,
+                // Data Dragon appelle le skin de base "default"
+                nom: skin.num == 0 ? "\(champion.nom) (classique)" : skin.name,
+                cleChampion: champion.id,
+                nomChampion: champion.nom,
+                numero: skin.num
+            )
+        }
+    }
+
     // Recup automatiquement la derniere version de Data Dragon.
     // Evite d'utiliser une version fixe qui pourrait devenir ancienne
     private func recupererVersionDataDragon() async throws -> String {
@@ -486,6 +528,21 @@ private struct ChampionsDataDragon: Codable {
 private struct ChampionDataDragonAPI: Codable {
     let id: String
     let key: String
+    let name: String
+}
+
+// Decoder le fichier détaillé d'un champion (champion/Ahri.json)
+private struct ChampionDetailDataDragon: Codable {
+    let data: [String: ChampionDetailAPI]
+}
+
+private struct ChampionDetailAPI: Codable {
+    let skins: [SkinAPI]
+}
+
+private struct SkinAPI: Codable {
+    let id: String
+    let num: Int
     let name: String
 }
 
