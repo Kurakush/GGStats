@@ -10,7 +10,6 @@ Application iOS en SwiftUI pour consulter les statistiques d'un joueur **League 
 - **Profil** : icône, niveau, rang, LP, victoires et défaites, win rate.
 - **Top 3 des maîtrises** de champion.
 - **5 dernières parties** et win rate (ou taux de Top 4 en TFT). Le détail d'une partie LoL montre les 10 joueurs avec leur KDA.
-- **Collection de skins** : on parcourt tous les champions et leurs skins, et on coche ceux qu'on possède. La collection est enregistrée sur le téléphone.
 
 ### App Apple Watch
 - Recherche d'un joueur, rang, maîtrises et dernières parties, dans une version adaptée à la montre.
@@ -72,7 +71,7 @@ xcodebuild test -project GGStats.xcodeproj -scheme GGStats \
   -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:GGStatsTests
 ```
 
-Ils couvrent l'analyse du Riot ID, les calculs de statistiques, le service `APIRiot`, le ViewModel du joueur et la collection de skins.
+Ils couvrent l'analyse du Riot ID, les calculs de statistiques, le service `APIRiot` et le ViewModel du joueur.
 
 ## Organisation du projet
 
@@ -80,13 +79,13 @@ Ils couvrent l'analyse du Riot ID, les calculs de statistiques, le service `APIR
 GGStats/              App iPhone
   GGStatsApp.swift      Point d'entrée, initialisation de Firebase
   Services/             AuthManager (Firebase Auth : email, Google, Apple)
-  View/                 Écrans SwiftUI (connexion, accueil, recherche, profil, skins…)
+  View/                 Écrans SwiftUI (connexion, accueil, recherche, profil…)
 GGStatsWatch/         App Apple Watch
 GGStatsWidget/        Widget (écran d'accueil et écran verrouillé)
 Partage/              Code commun à l'iPhone, la montre et le widget
-  Modeles/              Modèles de données (compte, classement, parties, skins…)
+  Modeles/              Modèles de données (compte, classement, parties…)
   Services/APIRiot.swift  Appels à l'API Riot et à Data Dragon
-  ViewModeles/          JoueurVueModele, CollectionSkinsVueModele
+  ViewModeles/          JoueurVueModele
   ThemeGG.swift         Couleurs et fond dégradé
 GGStatsTests/         Tests unitaires
 scripts/              changer-cle-api.sh
@@ -97,13 +96,12 @@ Le dossier `Partage/` est compilé dans les trois cibles. Le code qui utilise Fi
 ## Sources de données
 
 - **API Riot Games** : comptes (Riot ID), profil, classements, maîtrises, historique LoL et TFT.
-- **Data Dragon** : noms et images des champions, icônes de profil, skins. La dernière version est récupérée automatiquement.
+- **Data Dragon** : noms et images des champions, icônes de profil. La dernière version est récupérée automatiquement.
 
 ## Limites
 
 - **Serveur EUW uniquement** : les requêtes sont envoyées aux régions `europe` et `euw1`.
 - **Clé API de développement** : elle expire toutes les 24 h et ses limites de requêtes sont basses.
-- **Collection de skins manuelle** : l'API Riot ne donne pas les skins possédés par un compte. La collection se remplit donc à la main et n'est pas synchronisée entre appareils.
 - **Sign in with Apple** : le code est en place (nonce SHA-256, credential Firebase), mais il faut un **compte Apple Developer payant** pour qu'il fonctionne. Sans ce compte, un message d'erreur s'affiche. Pour l'activer :
   1. Ajouter la capability « Sign in with Apple » sur la cible GGStats.
   2. Activer le fournisseur Apple dans Firebase, avec un Service ID et une clé .p8.

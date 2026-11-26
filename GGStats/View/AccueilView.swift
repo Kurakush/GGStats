@@ -63,19 +63,6 @@ struct AccueilView: View {
                     .padding(.horizontal, 30)
 
                     NavigationLink {
-                        CollectionSkinsView()
-                    } label: {
-                        Label("Ma collection de skins", systemImage: "sparkles.rectangle.stack.fill")
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.ggCarte)
-                            .cornerRadius(18)
-                    }
-                    .padding(.horizontal, 30)
-
-                    NavigationLink {
                         AProposView()
                     } label: {
                         Text("À propos")
