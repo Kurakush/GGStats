@@ -24,13 +24,12 @@ Application iOS en SwiftUI pour consulter les statistiques d'un joueur **League 
 - **Xcode 26** ou plus récent
 - iOS 26.2 et watchOS 26.0 minimum
 - Un compte Riot pour obtenir une clé API
-- Un projet Firebase avec l'authentification email et Google activée
 
 Les packages Swift (Firebase et GoogleSignIn) sont téléchargés automatiquement par Xcode à la première ouverture.
 
 ## Installation
 
-Deux fichiers sont volontairement **absents du dépôt** et doivent être ajoutés avant de compiler.
+Le fichier de configuration Firebase est fourni dans le dépôt. Seule la clé API Riot est **absente** et doit être ajoutée avant de compiler.
 
 ### 1. Clé API Riot → `Partage/Secrets.swift`
 
@@ -47,12 +46,16 @@ Deux fichiers sont volontairement **absents du dépôt** et doivent être ajout�
 
 ### 2. Configuration Firebase → `GGStats/GoogleService-Info.plist`
 
+Le fichier `GGStats/GoogleService-Info.plist` est **inclus dans le dépôt** : il pointe vers le projet Firebase de GGStats (Bundle ID **`com.dev.GGStats`**), avec l'authentification email et Google déjà activée. Il n'y a rien à faire.
+
+Ce fichier n'est pas un secret : il identifie l'app auprès de Firebase, et l'accès aux données reste contrôlé par les règles de sécurité Firebase.
+
+**Pour utiliser ton propre projet Firebase** (facultatif) :
+
 1. Dans la [console Firebase](https://console.firebase.google.com), crée un projet et ajoute une app iOS avec le Bundle ID **`com.dev.GGStats`**.
 2. Dans **Authentication > Sign-in method**, active **Email/Mot de passe** et **Google**.
-3. Télécharge `GoogleService-Info.plist` **après** avoir activé Google, pour qu'il contienne le `CLIENT_ID`.
-4. Place-le dans le dossier `GGStats/` depuis le Finder, en gardant **exactement** ce nom.
-
-Si tu utilises ton propre projet Firebase, remplace aussi l'URL Scheme dans `GGStats/Info.plist` par la valeur `REVERSED_CLIENT_ID` de ton plist. Dans Xcode, c'est dans la cible GGStats, onglet Info, section URL Types.
+3. Télécharge `GoogleService-Info.plist` **après** avoir activé Google, pour qu'il contienne le `CLIENT_ID`, et remplace celui du dossier `GGStats/` en gardant **exactement** ce nom.
+4. Remplace l'URL Scheme dans `GGStats/Info.plist` par la valeur `REVERSED_CLIENT_ID` de ton plist. Dans Xcode, c'est dans la cible GGStats, onglet Info, section URL Types.
 
 ### 3. Lancer l'app
 

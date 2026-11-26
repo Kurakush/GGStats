@@ -6,7 +6,3 @@ xcuserdata/
 
 # Fichiers macOS
 .DS_Store
-
-# Configuration Firebase : à télécharger depuis la console Firebase (Paramètres du projet > app iOS)
-# et à placer dans GGStats/GoogleService-Info.plist
-GGStats/GoogleService-Info.plist
